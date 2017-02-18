@@ -52,7 +52,7 @@
             //前シーン削除
             if (!string.IsNullOrEmpty(nowScene))
             {
-                SceneManager.UnloadScene(nowScene);
+				SceneManager.UnloadSceneAsync (nowScene);
             }
 
             //非同期読み込み
