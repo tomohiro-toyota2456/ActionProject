@@ -25,7 +25,7 @@
     moveDir.x = -1.0f;
    }
 
-   if (Input.GetKeyDown(KeyCode.Space))
+   if (Input.GetKeyUp(KeyCode.Space))
    {
     isJump = true;
    }

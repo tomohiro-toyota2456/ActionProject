@@ -11,12 +11,19 @@ public class CharacterMover : MonoBehaviour
 {
   [SerializeField]
   Rigidbody rdbody;
+  [SerializeField]
+  BoxCollider groundHitBox;//地面との判定ジャンプ判定に使う
+
 
   [SerializeField]
   CharacterStatus characterStatus;
 
   IController controller;
   bool isJump = true;
+  public bool IsJump { set { isJump = value; } }
+
+  Vector3 spd;
+
   private void Start()
   {
    controller = GetComponent<IController>();
@@ -27,24 +34,39 @@ public class CharacterMover : MonoBehaviour
    }
 
    //ジャンプ
-   this.FixedUpdateAsObservable().
-    Where(_ => isJump && controller.PushJumpKey()).
+   this.UpdateAsObservable().
+    Where(_ =>isJump &&controller.PushJumpKey()).
     Subscribe((_) =>
     {
-     float spd = characterStatus.CurSpd;
-     rdbody.AddForce(0, spd, 0);
+     spd.y = characterStatus.CurSpd *5;
      isJump = false;
     });
 
    //移動
-   this.FixedUpdateAsObservable().
+   this.UpdateAsObservable().
     Where(_ => isJump && controller.MoveDir().magnitude != 0)
     .Subscribe((_) =>
     {
-     float spd = characterStatus.CurSpd * controller.MoveDir().x;
-     rdbody.AddForce(spd, 0, 0);
-     Debug.Log("test");
+     spd.x = characterStatus.CurSpd * controller.MoveDir().x;
     });
+
+   this.FixedUpdateAsObservable()
+    .Subscribe((_) => 
+    {
+     rdbody.velocity = spd;
+     spd.x *= 0.8f;
+     spd.y -= 0.8f;
+
+     if(isJump && spd.y < 0)
+     {
+      spd.y = 0;
+     }
+
+    });
+
+   groundHitBox.OnTriggerEnterAsObservable()
+    .Where(_ => _.tag == "Ground" && rdbody.velocity.y <= 0)
+    .Subscribe(_ => IsJump = true);
   }
 
 }
