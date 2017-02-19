@@ -19,8 +19,8 @@ public class CharacterMover : MonoBehaviour
   CharacterStatus characterStatus;
 
   IController controller;
-  bool isJump = true;
-  public bool IsJump { set { isJump = value; } }
+  BoolReactiveProperty isJump = new BoolReactiveProperty(true);
+  public BoolReactiveProperty IsJump { get { return isJump; } }
 
   Vector3 spd;
 
@@ -35,16 +35,16 @@ public class CharacterMover : MonoBehaviour
 
    //ジャンプ
    this.UpdateAsObservable().
-    Where(_ =>isJump &&controller.PushJumpKey()).
+    Where(_ =>isJump.Value &&controller.PushJumpKey()).
     Subscribe((_) =>
     {
-     spd.y = characterStatus.CurSpd *5;
-     isJump = false;
+     spd.y = characterStatus.CurJump;
+     isJump.Value = false;
     });
 
    //移動
    this.UpdateAsObservable().
-    Where(_ => isJump && controller.MoveDir().magnitude != 0)
+    Where(_ =>controller.MoveDir().magnitude != 0)
     .Subscribe((_) =>
     {
      spd.x = characterStatus.CurSpd * controller.MoveDir().x;
@@ -57,7 +57,8 @@ public class CharacterMover : MonoBehaviour
      spd.x *= 0.8f;
      spd.y -= 0.8f;
 
-     if(isJump && spd.y < 0)
+     //0にしてあげないと横への動きがおかしくなる
+     if(isJump.Value && spd.y < 0)
      {
       spd.y = 0;
      }
@@ -66,7 +67,7 @@ public class CharacterMover : MonoBehaviour
 
    groundHitBox.OnTriggerEnterAsObservable()
     .Where(_ => _.tag == "Ground" && rdbody.velocity.y <= 0)
-    .Subscribe(_ => IsJump = true);
+    .Subscribe(_ => IsJump.Value = true);
   }
 
 }

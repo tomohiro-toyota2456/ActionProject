@@ -12,6 +12,8 @@ public class CharacterStatus : MonoBehaviour
   [SerializeField]
   int spd;
   [SerializeField]
+  int jump;
+  [SerializeField]
   int def;
   [SerializeField]
   int maxHp;
@@ -22,6 +24,7 @@ public class CharacterStatus : MonoBehaviour
   int curAtk;
   int curSpd;
   int curDef;
+  int curJump;
 
   public enum ParamName
   {
@@ -36,6 +39,7 @@ public class CharacterStatus : MonoBehaviour
   public int CurAtk { get { return curAtk; } }
   public int CurDef { get { return curDef; } }
   public int CurSpd { get { return curSpd; } }
+  public int CurJump { get { return curJump; } }
 
   private void Start()
   {
@@ -44,6 +48,7 @@ public class CharacterStatus : MonoBehaviour
    curSpd = spd;
    curHp.Value = maxHp;
    curMaxHp.Value = maxHp;
+   curJump = jump;
   }
 
   //ステータスに補正値をかける
