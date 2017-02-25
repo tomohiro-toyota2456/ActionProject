@@ -30,7 +30,7 @@
     isJump = true;
    }
 
-   if (Input.GetKeyDown(KeyCode.KeypadEnter))
+   if (Input.GetKeyDown(KeyCode.P))
    {
     isAttack = true;
    }
